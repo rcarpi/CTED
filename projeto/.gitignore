@@ -1,0 +1,7 @@
+.env
+**/bin/
+**/obj/
+**/.vs/
+*.user
+.DS_Store
+_assets_raw/

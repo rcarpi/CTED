@@ -1,0 +1,77 @@
+/* =============================================================================
+   TOKENS DE CUSTOMIZAÇÃO — ajuste aqui para aderir ao Figma.
+   Todos os componentes (style.css) consomem apenas estas variáveis.
+   Valores extraídos do kit "SESI INDÚSTRIA" (SVGs) e dos prints do protótipo
+   (doc/figma/1.png home, 2.png detalhe, 3.png curso interno/Moodle).
+   ============================================================================= */
+:root {
+  /* ---- Cores de marca --------------------------------------------------- */
+  --cor-primaria: #D00602;          /* vermelho SESI (logo, hero) */
+  --cor-primaria-escura: #8C0000;   /* fim do gradiente do hero / seção CTA */
+  --cor-primaria-card: #A3050A;     /* cards vermelhos "Principais cursos" */
+  --cor-primaria-suave: rgba(227, 5, 19, 0.08); /* fundo dos ícones "red" */
+  --cor-depoimentos-fundo: #7A0A0A; /* seção "Quem fez recomenda" (home) */
+  --cor-depoimentos-card: #B4121A;
+  --cor-destaque: #FCD19C;          /* bege: chips, ícones "bege", depoimentos (detalhe) */
+  --cor-destaque-texto: #5A3B00;
+
+  /* ---- Neutros ------------------------------------------------------------ */
+  --cor-texto: #0C0C0D;
+  --cor-texto-secundario: #4A4A4F;
+  --cor-texto-invertido: #FFFFFF;
+  --cor-fundo: #FFFFFF;
+  --cor-fundo-alternativo: #F5F5F6;
+  --cor-borda: #D9D9D9;
+  --cor-superficie-escura: #0C0C0D; /* botões pretos, barra fixa */
+  --cor-rodape: #1C110C;            /* rodapé marrom-escuro */
+
+  /* ---- Status (fallback; a API envia a cor de cada status) ---------------- */
+  --status-aberto: #1B7F3B;
+  --status-andamento: #0C5BA5;
+  --status-breve: #B86E00;
+  --status-encerrado: #6B6B6B;
+
+  /* ---- Feedback ----------------------------------------------------------- */
+  --cor-erro: #B3261E;
+  --cor-erro-fundo: #FDECEA;
+  --cor-foco: #1A73E8;
+
+  /* ---- Tipografia --------------------------------------------------------- */
+  --fonte: "Open Sans", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --fonte-tamanho-base: 16px;
+  --display: clamp(2.5rem, 1.6rem + 3.2vw, 4rem);    /* 40–64px: hero da home */
+  --titulo-1: clamp(2rem, 1.2rem + 2.6vw, 3rem);     /* 32–48px */
+  --titulo-2: clamp(1.5rem, 1.1rem + 1.2vw, 2rem);   /* 24–32px */
+  --titulo-3: 1.25rem;
+  --numero: clamp(2.25rem, 1.5rem + 2.5vw, 3.5rem);  /* indicadores */
+  --texto-pequeno: 0.875rem;
+  --texto-micro: 0.75rem;
+  --peso-regular: 400;
+  --peso-semibold: 600;
+  --peso-bold: 700;
+  --altura-linha: 1.5;
+
+  /* ---- Espaçamento / forma ------------------------------------------------ */
+  --espaco-1: 0.25rem;
+  --espaco-2: 0.5rem;
+  --espaco-3: 0.75rem;
+  --espaco-4: 1rem;
+  --espaco-5: 1.5rem;
+  --espaco-6: 2rem;
+  --espaco-7: 3rem;
+  --espaco-8: 4rem;
+  --espaco-9: 6rem;
+  --raio-pequeno: 4px;
+  --raio: 8px;
+  --raio-grande: 12px;
+  --raio-pill: 999px;
+  --sombra: 0 2px 8px rgba(12, 12, 13, 0.08);
+  --sombra-elevada: 0 8px 24px rgba(12, 12, 13, 0.16);
+
+  /* ---- Layout ------------------------------------------------------------- */
+  --largura-max: 1200px;
+  --gutter: 1rem;
+  --altura-header: 72px;
+  --card-largura: 280px;            /* cards do carrossel */
+  --transicao: 160ms ease;
+}

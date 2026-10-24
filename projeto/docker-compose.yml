@@ -1,0 +1,178 @@
+name: catalogo-cursos
+
+services:
+  # ---------------------------------------------------------------------------
+  # MySQL 8 — um servidor, dois bancos: `moodle` (Moodle) e `catalogo` (API C#)
+  # ---------------------------------------------------------------------------
+  mysql:
+    image: mysql:8.0
+    container_name: cc-mysql
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --innodb_file_per_table=1
+      - --max_allowed_packet=256M
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MOODLE_DB_NAME: ${MOODLE_DB_NAME}
+      MOODLE_DB_USER: ${MOODLE_DB_USER}
+      MOODLE_DB_PASSWORD: ${MOODLE_DB_PASSWORD}
+      CATALOGO_DB_NAME: ${CATALOGO_DB_NAME}
+      CATALOGO_DB_USER: ${CATALOGO_DB_USER}
+      CATALOGO_DB_PASSWORD: ${CATALOGO_DB_PASSWORD}
+    ports:
+      - "${MYSQL_PORT:-3306}:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      # -h 127.0.0.1 força TCP: durante a inicialização (scripts de db/init) o MySQL
+      # só responde no socket Unix, então o healthcheck não libera a API cedo demais.
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+
+  # ---------------------------------------------------------------------------
+  # Moodle (imagem Bitnami). Primeiro start demora alguns minutos (instalação).
+  # ---------------------------------------------------------------------------
+  moodle:
+    image: bitnamilegacy/moodle:4.4
+    container_name: cc-moodle
+    depends_on:
+      mysql:
+        condition: service_healthy
+      mailpit:
+        condition: service_started
+    environment:
+      MOODLE_DATABASE_TYPE: mysqli
+      MOODLE_DATABASE_HOST: mysql
+      MOODLE_DATABASE_PORT_NUMBER: 3306
+      MOODLE_DATABASE_NAME: ${MOODLE_DB_NAME}
+      MOODLE_DATABASE_USER: ${MOODLE_DB_USER}
+      MOODLE_DATABASE_PASSWORD: ${MOODLE_DB_PASSWORD}
+      MOODLE_USERNAME: ${MOODLE_ADMIN_USER}
+      MOODLE_PASSWORD: ${MOODLE_ADMIN_PASSWORD}
+      MOODLE_EMAIL: ${MOODLE_ADMIN_EMAIL}
+      MOODLE_SITE_NAME: ${MOODLE_SITE_NAME}
+      MOODLE_HOST: localhost:${MOODLE_PORT:-8080}
+      MOODLE_REVERSEPROXY: "no"
+      MOODLE_SSLPROXY: "no"
+      MOODLE_LANG: pt_br
+      CATALOG_URL: http://localhost:${FRONTEND_PORT:-3000}
+      MOODLE_SMTP_HOST: mailpit
+      MOODLE_SMTP_PORT_NUMBER: 1025
+      MOODLE_SMTP_PROTOCOL: none
+      PHP_MEMORY_LIMIT: 512M
+      ALLOW_EMPTY_PASSWORD: "no"
+    ports:
+      - "${MOODLE_PORT:-8080}:8080"
+    volumes:
+      - moodle_data:/bitnami/moodle
+      - moodledata_data:/bitnami/moodledata
+      # Scripts e tema montados como diretório (bind de arquivo único não reflete substituições)
+      - ./moodle:/opt/sesi:ro
+
+  # ---------------------------------------------------------------------------
+  # Mailpit — SMTP fake para o Moodle (confirmação de cadastro). UI: :8025
+  # ---------------------------------------------------------------------------
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: cc-mailpit
+    ports:
+      - "${MAILPIT_PORT:-8025}:8025"
+    environment:
+      MP_SMTP_AUTH_ACCEPT_ANY: "1"
+      MP_SMTP_AUTH_ALLOW_INSECURE: "1"
+
+  # ---------------------------------------------------------------------------
+  # API C#/.NET 8 — catálogo de cursos (MySQL próprio + sync opcional do Moodle)
+  # ---------------------------------------------------------------------------
+  api:
+    build:
+      context: ./backend
+      dockerfile: CatalogoCursos.Api/Dockerfile
+    container_name: cc-api
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+      ConnectionStrings__Catalogo: "Server=mysql;Port=3306;Database=${CATALOGO_DB_NAME};User=${CATALOGO_DB_USER};Password=${CATALOGO_DB_PASSWORD};CharSet=utf8mb4;"
+      Moodle__BaseUrl: http://moodle:8080
+      Moodle__PublicBaseUrl: http://localhost:${MOODLE_PORT:-8080}
+      Moodle__Token: ${MOODLE_WS_TOKEN:-}
+      Moodle__Username: ${MOODLE_ADMIN_USER}
+      Moodle__Password: ${MOODLE_ADMIN_PASSWORD}
+      Moodle__Service: moodle_mobile_app
+      Cors__AllowedOrigins__0: http://localhost:${FRONTEND_PORT:-3000}
+      Cors__AllowedOrigins__1: http://127.0.0.1:${FRONTEND_PORT:-3000}
+    ports:
+      - "${API_PORT:-5000}:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+
+  # ---------------------------------------------------------------------------
+  # Front-end estático (nginx) — HTML/CSS/JS que consome a API
+  # ---------------------------------------------------------------------------
+  frontend:
+    image: nginx:1.27-alpine
+    container_name: cc-frontend
+    depends_on:
+      - api
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro
+      - ./frontend/nginx.main.conf:/etc/nginx/nginx.conf:ro   # "user root": arquivos 600 no host
+      - ./frontend/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - "${FRONTEND_PORT:-3000}:80"
+
+  # ---------------------------------------------------------------------------
+  # Adminer — inspeção dos bancos (opcional; `docker compose --profile tools up`)
+  # ---------------------------------------------------------------------------
+  adminer:
+    image: adminer:4
+    container_name: cc-adminer
+    profiles: ["tools"]
+    depends_on:
+      - mysql
+    ports:
+      - "${ADMINER_PORT:-8081}:8080"
+
+  # ---------------------------------------------------------------------------
+  # SDK .NET para comandos pontuais SEM instalar dotnet no host
+  # (build, dotnet ef migrations, etc.). Uso: ./backend/dotnet.sh <comando>
+  # Ex.: ./backend/dotnet.sh build
+  #      ./backend/dotnet.sh ef migrations add Inicial
+  # ---------------------------------------------------------------------------
+  sdk:
+    image: mcr.microsoft.com/dotnet/sdk:8.0
+    container_name: cc-sdk
+    profiles: ["dev"]
+    working_dir: /src/CatalogoCursos.Api
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+      DOTNET_NOLOGO: "1"
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__Catalogo: "Server=mysql;Port=3306;Database=${CATALOGO_DB_NAME};User=${CATALOGO_DB_USER};Password=${CATALOGO_DB_PASSWORD};CharSet=utf8mb4;"
+    volumes:
+      - ./backend:/src
+      - nuget_cache:/root/.nuget/packages
+      - dotnet_tools:/root/.dotnet/tools
+    entrypoint: ["dotnet"]
+    command: ["--info"]
+
+volumes:
+  mysql_data:
+  moodle_data:
+  moodledata_data:
+  nuget_cache:
+  dotnet_tools:

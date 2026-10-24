@@ -1,0 +1,20 @@
+// =============================================================================
+// Variáveis SESI Indústria — sobrescrevem os !default do Bootstrap/Boost.
+// Cores vindas do kit (SVGs) e do protótipo Figma.
+// =============================================================================
+$sesi-vermelho:        #D00602;
+$sesi-vermelho-escuro: #8C0000;
+$sesi-bege:            #FCD19C;
+$sesi-preto:           #0C0C0D;
+$sesi-cinza:           #D9D9D9;
+$sesi-cinza-texto:     #4A4A4F;
+
+$primary:   $sesi-vermelho;
+$secondary: $sesi-cinza-texto;
+$body-color: $sesi-preto;
+$link-color: $sesi-vermelho;
+$font-family-sans-serif: "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+$headings-font-weight: 700;
+$border-radius: .25rem;
+$drawer-width: 285px;
+$navbar-height: 60px;

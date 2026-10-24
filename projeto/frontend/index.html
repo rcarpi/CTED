@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SESI Indústria — Impulsione sua carreira na indústria</title>
+  <meta name="description" content="Plataforma de cursos para a indústria: consulte o catálogo, conheça os cursos e matricule-se.">
+  <!-- Publicação: URL pública da API e do Moodle -->
+  <!-- <meta name="api-base" content="https://sua-api.onrender.com/api"> -->
+  <!-- <meta name="moodle-url" content="https://seu-moodle"> -->
+  <link rel="icon" href="assets/icons/logo-sesi.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
+  <header class="header" data-layout="header" data-variante="transparente"></header>
+
+  <main id="conteudo">
+    <!-- Hero (1.png) -->
+    <section class="hero" aria-labelledby="hero-titulo">
+      <img class="hero__img" src="assets/img/hero-image.jpg" alt="" width="1600" height="900" fetchpriority="high">
+      <div class="container hero__inner">
+        <h1 class="hero__titulo" id="hero-titulo">Impulsione sua carreira na indústria</h1>
+        <p class="hero__texto">Amplie seus conhecimentos com excelência na melhor plataforma de estudos da indústria brasileira</p>
+        <a class="btn btn--invert" href="cursos.html">Conhecer cursos <img class="icon" src="assets/icons/arrow-navigation-1.svg" alt=""></a>
+      </div>
+    </section>
+
+    <!-- Principais cursos -->
+    <section class="secao container" aria-labelledby="principais-titulo">
+      <h2 class="secao__titulo" id="principais-titulo">Principais cursos</h2>
+      <div class="carrossel" id="principais" aria-live="polite" aria-busy="true"></div>
+      <div class="carrossel__rodape">
+        <a class="btn btn--outline" href="cursos.html">Ver todos os cursos</a>
+        <div class="setas">
+          <button type="button" class="seta" id="principais-antes" aria-label="Cursos anteriores"><img src="assets/icons/arrow-navigation.svg" alt=""></button>
+          <button type="button" class="seta" id="principais-depois" aria-label="Próximos cursos"><img src="assets/icons/arrow-navigation-1.svg" alt=""></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Impacto -->
+    <section class="secao container" id="sobre" aria-labelledby="impacto-titulo">
+      <div class="impacto">
+        <div>
+          <h2 id="impacto-titulo">Impacto transformador</h2>
+          <p class="impacto__texto texto-secundario">Resultados que demonstram o sucesso da nossa metodologia de capacitação contínua para a indústria</p>
+        </div>
+        <ul class="impacto__lista" id="indicadores"></ul>
+      </div>
+    </section>
+
+    <!-- Benefícios (3) -->
+    <section class="secao container" id="beneficios" aria-label="Benefícios">
+      <div class="beneficios beneficios--3">
+        <div class="beneficio"><img src="assets/icons/01-certificacao-red.svg" alt=""><h3>Certificação SESI</h3><p>Cursos com a melhor certificação do mercado industrial reconhecidos pelo SESI.</p></div>
+        <div class="beneficio"><img src="assets/icons/02-professores-red.svg" alt=""><h3>Professores especialistas</h3><p>Contamos com professores reconhecidos por sua excelência no mercado.</p></div>
+        <div class="beneficio"><img src="assets/icons/03-suporte-red.svg" alt=""><h3>Suporte contínuo</h3><p>Você não está sozinho! Acompanhamento online durante todo o curso.</p></div>
+      </div>
+    </section>
+
+    <!-- Depoimentos -->
+    <section class="depoimentos depoimentos--escuro" aria-labelledby="dep-titulo">
+      <div class="container">
+        <span class="sobretitulo">Depoimentos</span>
+        <h2 class="secao__titulo" id="dep-titulo">Quem fez recomenda</h2>
+        <div class="carrossel" id="depoimentos" aria-live="polite"></div>
+        <div class="carrossel__rodape">
+          <span></span>
+          <div class="setas">
+            <button type="button" class="seta" id="dep-antes" aria-label="Depoimentos anteriores"><img src="assets/icons/arrow-navigation.svg" alt=""></button>
+            <button type="button" class="seta" id="dep-depois" aria-label="Próximos depoimentos"><img src="assets/icons/arrow-navigation-1.svg" alt=""></button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta cta--escuro" aria-labelledby="cta-titulo">
+      <div class="container cta__grid">
+        <div>
+          <h2 id="cta-titulo">Pronto para transformar sua carreira?</h2>
+          <p class="cta__texto">Junte-se a milhares de profissionais que já estão transformando a indústria através dos nossos cursos. Invista no seu futuro hoje mesmo!</p>
+          <a class="btn btn--invert" href="cursos.html" data-matricular>Matricule-se <img class="icon" src="assets/icons/arrow-navigation-1.svg" alt=""></a>
+        </div>
+        <div class="midia">
+          <img src="assets/img/video-thumb.jpg" alt="Vídeo institucional" width="1600" height="900" loading="lazy">
+          <button type="button" class="midia__play" aria-label="Assistir vídeo institucional (em breve)"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M8 5v14l11-7L8 5Z"/></svg></button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer" data-layout="footer"></footer>
+
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/home.js"></script>
+</body>
+</html>
